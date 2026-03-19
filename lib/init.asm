@@ -41,11 +41,13 @@
         ld      a, +(1024-64) >> 2      ; set physical address of common area 1.
                                         ; The register is in 4Kb chunks.  ">> 2"
                                         ; converts 1Kb value to 4Kb chunks.
-                                        ; Total physical memory size is 1Mb - 1024Kb
+                                        ; Total physical memory size is 1Mb = 1024Kb
                                         ; Since the entire logical memory needs to be 
                                         ; mapped onto the physical memory, we need to
                                         ; offset by 64k, not just the 32k that is 
-                                        ; actually Common Area 1
+                                        ; actually Common Area 1, because the logical
+                                        ; address of the bottom of Common Area 1 is 
+                                        ; 0x8000, not 0x0000.
         out0    (cbr_addr), a
 
         ; Set up stack
@@ -74,9 +76,14 @@ ramcode:
 
 romoff:
         ; Change banked area to point to bottom 32K of RAM
-        ld      a, +(512 >> 2)          ; bottom of RAM 
-        out0    (bbr_addr), a
+        ;ld      a, +(512 >> 2)          ; bottom of RAM 
+        ;out0    (bbr_addr), a
 
+        ; Change banked area to point to physical RAM just below the common bank area
+        ld      a, +(1024-64) >> 2      ; note this is same address as CBR, but
+                                        ; this should work because logical address of 
+                                        ; bottom of bank area is 0x0000
+        out0    (bbr_addr), a
 
         jp      prog_start
 
