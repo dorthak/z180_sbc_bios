@@ -280,26 +280,26 @@ sd_cmd17:
 
     .ifdef sd_debug_cmd17
     ; print the comand buffer
-    call    iputs
-    db      'CMD17: ', 0
-    push    iy
-    pop     hl                  ; HL = IY = cmd_buffer address
-    ld      bc, 6               ; BC = command buffer length
-    ld      e, 0
-    call    hexdump
+        call    iputs
+        db      'CMD17: ', 0
+        push    iy
+        pop     hl                  ; HL = IY = cmd_buffer address
+        ld      bc, 6               ; BC = command buffer length
+        ld      e, 0
+        call    hexdump
 
-    ; print the target address
-    call    iputs
-    db      '  Target: ', 0
+        ; print the target address
+        call    iputs
+        db      '  Target: ', 0
 
-    pop     de                  ; restore DE = target buffer address
-    push    de                  ; and keep it on the stack too
+        pop     de                  ; restore DE = target buffer address
+        push    de                  ; and keep it on the stack too
 
-    ld      a, d
-    call    hexdump_a
-    ld      a, e
-    call    hexdump_a
-    call    puts_crlf
+        ld      a, d
+        call    hexdump_a
+        ld      a, e
+        call    hexdump_a
+        call    puts_crlf
     .endif
 
     ; assert the SSEL line
@@ -315,14 +315,14 @@ sd_cmd17:
     call    sd_read_r1         ; clobbers A, E
 
     .ifdef sd_debug_cmd17
-    push    af
-    call    iputs
-    db      '  R1: ', 0
-    pop     af
-    push    af
-    call    hexdump_a
-    call    puts_crlf
-    pop     af
+        push    af
+        call    iputs
+        db      '  R1: ', 0
+        pop     af
+        push    af
+        call    hexdump_a
+        call    puts_crlf
+        pop     af
     .endif
 
     ; If R1 status != SD_READY (0x00) then error (SD spec p265, Section 7.2.3)
