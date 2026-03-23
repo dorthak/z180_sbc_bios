@@ -4,7 +4,7 @@ Version 1.0 is the first fully functional (if extremely limited) firmware, bios,
 
 All development was done on a Raspberry Pi 3B running Raspberry Pi OS 13 (Trixie) 64-bit.  It should work fine on any other Linux-based system, and maybe others, but I've not tested it on any other platforms.
 
-To flash the board's ROM you will need either a ROM programmer (I use XGecu T48 on a Windows PC using their native software) or a way to flash it in-system.  I switched to the latter by using John Winans' z80 Retro programmer (hardware and software* here: https://github.com/Z80-Retro/2065-Z80-programmer) connected to the same RPi and my own adapter board (https://github.com/dorthak/z180_SBC_ISP_Adapter).
+To flash the board's ROM you will need either a ROM programmer (I use XGecu T48 on a Windows PC using their native software) or a way to flash it in-system.  I switched to the latter by using John Winans' z80 Retro programmer (hardware and software here: https://github.com/Z80-Retro/2065-Z80-programmer) connected to the same RPi and my own adapter board (https://github.com/dorthak/z180_SBC_ISP_Adapter).
 
 This project is currently designed to be assembled using the vasm assembler, found here: http://sun.hasenbraten.de/vasm/ and here: https://github.com/StarWolf3000/vasm-mirror  It needs to be built to support the oldstyle syntax module and the z80 CPU module.
 
@@ -26,12 +26,4 @@ Be sure to edit `MakeInfo.default` with the correct paths and device names for y
 
 `make getsaves` downloads an image from the SD card and extracts `.SAV ` files, if any, into the `filesystem/saves` directory for later inclusion in `make install`
 
-`make burn` will put the file system onto the SD card.  Be sure to look carefully at the `MakeInfo.default` to make certain the correct device is being written to, and that the code is being run on the correct device.  The settings there work on my RPi.  gitGetting this wrong can brick your computer!
-
-
-
-* out of the box, the Retro Programmer software does not work with the SST39SF040 ROM chip on this board.  However, a small change in the programmer code fixes this - in `pi/flash.c`, line 520, needs to be changed from:
-
-`if (d != 0xbfb5 && d != 0xbfb6 && d != 0xbfb7)` to `if (d != 0xbfb5 && d != 0xbfb6 && d != 0xbfb7 && d != 0x3ec0)`  
-
-The programmer software then needs to be re-built.
+`make burn` will put the file system onto the SD card.  Be sure to look carefully at the `MakeInfo.default` to make certain the correct device is being written to, and that the code is being run on the correct device.  The settings there work on my RPi.  Getting this wrong can brick your computer!
