@@ -5,7 +5,7 @@
 
 all: filesystem.img
 
-filesystem.img: ../bios.bin ../cpm/filesystem/* ../adventure/adv-B03
+filesystem.img: ../bios.bin ../cpm/filesystem/* ../adventure/adv-B03 ./saves/* ../progs/*.com
 	rm -f filesystem.img
 	mkfs.cpm -f $(DISKDEF) -b ../bios.bin filesystem.img
 	cpmcp -f $(DISKDEF) filesystem.img ../cpm/filesystem/* 0:

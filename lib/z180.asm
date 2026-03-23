@@ -23,6 +23,14 @@ cbar_addr:              .equ    Z180_BASE + $3A
 ; bottom of the unbanked RAM segment
 ram_start:              .equ    $8000
 
+; Define the location of the "standard" memory bank, which will hold the bottom of the TPA
+; and the zero page
+
+bank_start:             .equ    +(1024-64) >> 2      ; note this is same address as CBR, but
+                                        ; this should work because logical address of 
+                                        ; bottom of bank area is 0x0000
+
+
 ; Define the memory size to be used for the CP/M configuration
 MEM:                    .equ 60
 

@@ -80,9 +80,7 @@ romoff:
         ;out0    (bbr_addr), a
 
         ; Change banked area to point to physical RAM just below the common bank area
-        ld      a, +(1024-64) >> 2      ; note this is same address as CBR, but
-                                        ; this should work because logical address of 
-                                        ; bottom of bank area is 0x0000
+        ld      a, bank_start
         out0    (bbr_addr), a
 
         jp      prog_start
