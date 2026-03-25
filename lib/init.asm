@@ -80,7 +80,7 @@ romoff:
         ;out0    (bbr_addr), a
 
         ; Change banked area to point to physical RAM just below the common bank area
-        ld      a, bank_start
+        ld      a, low_bank
         out0    (bbr_addr), a
 
         jp      prog_start

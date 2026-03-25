@@ -548,7 +548,7 @@ halt_loop:
     halt
     jp      halt_loop
 
-	.include "nocache.asm" 		; This is the non-caching version
+	.include "sd_nocache.asm" 		; This is the non-caching version
     
     .include "sio.asm"
     .include "puts.asm"
@@ -644,12 +644,6 @@ bios_alv_a_end:
 ; #######################################################################
 
 
-bios_sdbuf_trk:		        ; The CP/M track number last left in the .bios_sdbuf
-	ds	    2, $ff		    ; initial value = garbage
-bios_sdbuf_val:		        ; The CP/M track number in bios_sdbuf_trk is valid when this is 0
-	ds	    1, $ff		    ; initial value = INVALID         
-bios_sdbuf:
-    ds  512, $a5
 
 bios_stack_lo:
     ds  64, $55            ; 32 stack levels = 64 bytes 

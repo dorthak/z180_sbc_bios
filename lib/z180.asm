@@ -25,8 +25,7 @@ ram_start:              .equ    $8000
 
 ; Define the location of the "standard" memory bank, which will hold the bottom of the TPA
 ; and the zero page
-
-bank_start:             .equ    +(1024-64) >> 2      ; note this is same address as CBR, but
+low_bank:               .equ    +(1024-64) >> 2      ; note this is same address as CBR, but
                                         ; this should work because logical address of 
                                         ; bottom of bank area is 0x0000
 
