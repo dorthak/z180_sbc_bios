@@ -7,52 +7,112 @@
 
 
 ; This is the Direct Memmory Cache bios read/write routines.
-
-
-;##########################################################################
-;
-; CP/M 2.2 Alteration Guide p19:
-; Assuming the drive has been selected, the track has been set, the sector
-; has been set, and the DMA address has been specified, the READ subroutine
-; attempts to read one sector based upon these parameters, and returns the
-; following error codes in register A:
-;
-;    0 no errors occurred
-;    1 non-recoverable error condition occurred
-;
-; When an error is reported the BDOS will print the message "BDOS ERR ON
-; x: BAD SECTOR".  The operator then has the option of typing <cr> to ignore
-; the error, or ctl-C to abort.
-;
-;##########################################################################    
-
-;##########################################################################
-;
-; CP/M 2.2 Alteration Guide p19:
-; Assuming the drive has been selected, the track has been set, the sector
-; has been set, and the DMA address has been specified, the READ subroutine
-; attempts to read one sector based upon these parameters, and returns the
-; following error codes in register A:
-;
-;    0 no errors occurred
-;    1 non-recoverable error condition occurred
-;
-; When an error is reported the BDOS will print the message "BDOS ERR ON
-; x: BAD SECTOR".  The operator then has the option of typing <cr> to ignore
-; the error, or ctl-C to abort.
-;
-;##########################################################################    
-
+ 
 rw_debug:		.equ	3
 
+;##########################################################################
+; Calc the cache slot number from the CP/M track number
+;
+; HL = track number
+; return: HL=slot number
+;##########################################################################
+dmt2s:
+	ld	h,0
+	ret
+
+
+;##########################################################################
+; Convert a cache slot number in HL to the bank address wherein the slot 
+; is stored.
+;
+; L=slot number (H must be zero and is ignored here)
+; return: A=bank number
+;##########################################################################
+dms2b:
+	ld	a, l		; BBBB Bxxx
+	and 0b11111000	; BBBB B000
+	rrca 			; 0BBB BB00
+	rrca 			; 00BB BBB0
+	scf
+	rra			    ; 100B BBBB <- need the leading 1 to put address into top half
+					; of address space where RAM is located
+	ret
+
+;##########################################################################
+; Convert a cache slot number in HL to the address offset of the slot
+;
+; L = slot number (H must be zero and is ignored here)
+; return: HL = slot address
+; Clobbers: AF
+;##########################################################################
+dms2a:
+	ld	a, l		; A = xxxx xAAA
+	and	0x07		; A = 0000 0AAA
+	rlca			; A = 0000 AAA0
+	ld	h, a		; HL = 0000 AAA0 xxxx xAAA
+	ld	l, 0		; HL = 0000 AAA0 0000 0000
+	ret
+
+;##########################################################################
+;
+; CP/M 2.2 Alteration Guide p19:
+; Assuming the drive has been selected, the track has been set, the sector
+; has been set, and the DMA address has been specified, the READ subroutine
+; attempts to read one sector based upon these parameters, and returns the
+; following error codes in register A:
+;
+;    0 no errors occurred
+;    1 non-recoverable error condition occurred
+;
+; When an error is reported the BDOS will print the message "BDOS ERR ON
+; x: BAD SECTOR".  The operator then has the option of typing <cr> to ignore
+; the error, or ctl-C to abort.
+;
+;##########################################################################
 bios_read:
 
-    .if rw_debug >=2
-        call	iputs
+    .if rw_debug >=1
+	    call	iputs
         asciiz	"bios_read entered: "
         call	debug_disk
     .endif
 
+	; test conversion routines
+	.if rw_debug >=1
+		call 	iputs
+		asciiz	"DM cache slot="
+
+		ld		hl, (disk_track)
+		call	dmt2s
+
+		ld		a, h
+		call	hexdump_a
+		ld		a, l
+		call	hexdump_a
+
+		call 	iputs
+		asciiz	", bank="
+
+		ld		hl, (disk_track)
+		call	dmt2s
+		call	dms2b
+		call	hexdump_a
+
+		call	iputs
+		asciiz	", address="
+
+		ld		hl, (disk_track)
+		call	dmt2s
+		call	dms2a
+
+		
+		ld		a, h
+		call	hexdump_a
+		ld		a, l
+		call	hexdump_a
+
+		call	puts_crlf
+	.endif
 
     .if 0
 
@@ -202,6 +262,11 @@ bios_write:
         pop     bc
     .endif
 
+	
+	; XXX stub in for testing
+	ld	a,1
+	ret			; 100% error!
+
     	; switch to a local stack (we only have a few levels when called from the BDOS!)
 	push    hl			            ; save HL into the caller's stack
 	ld	    hl, 0
@@ -337,7 +402,7 @@ bios_write:
 rw_init:
 	.if rw_debug >= 1
 		call iputs
-		asciiz "NOTICE: sd_nocache library installed.  Disk Cache disabled.\r\n"
+		asciiz "NOTICE: sd_dmcache library installed.  Direct Memory Cache enabled.\r\n"
 	.endif
 
     ; mark the .bios_sdbuf as invalid

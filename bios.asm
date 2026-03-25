@@ -6,11 +6,12 @@
 ; CP/M 2.2 BIOS for the z180 SBC  (SC131 or s100computers z180 SBC board)
 
 ;##########################################################################
-; set .debug to:
+; set debug to:
 ;    0 = no debug output
 ;    1 = print messages from new code under development
 ;    2 = print all the above plus the primairy 'normal' debug messages
 ;    3 = print all the above plus verbose 'noisy' debug messages
+;   debug needs to be at least 1 for disk_debug in RW drivers to work.
 ;##########################################################################
 
 debug:      .equ 1
@@ -555,8 +556,8 @@ halt_loop:
 ; Only ONE of these can be active at a time
 ;##########################################################################
 
-	.include "sd_nocache.asm" 		; This is the non-caching version
-	;.include "sd_dmcache.asm" 		; This is the direct memory caching version
+	;.include "sd_nocache.asm" 		; This is the non-caching version
+	.include "sd_dmcache.asm" 		; This is the direct memory caching version
 
 ;##########################################################################
 ; Various other include libraries
