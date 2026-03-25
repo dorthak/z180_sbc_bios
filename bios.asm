@@ -13,7 +13,7 @@
 ;    3 = print all the above plus verbose 'noisy' debug messages
 ;##########################################################################
 
-debug:      .equ 0
+debug:      .equ 1
 
 
     .include "z180.asm"
@@ -555,8 +555,8 @@ halt_loop:
 ; Only ONE of these can be active at a time
 ;##########################################################################
 
-	;.include "sd_nocache.asm" 		; This is the non-caching version
-	.include "sd_dmcache.asm" 		; This is the direct memory caching version
+	.include "sd_nocache.asm" 		; This is the non-caching version
+	;.include "sd_dmcache.asm" 		; This is the direct memory caching version
 
 ;##########################################################################
 ; Various other include libraries

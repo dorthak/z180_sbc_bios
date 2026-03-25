@@ -335,6 +335,11 @@ bios_write:
     ret
 
 rw_init:
+	.if rw_debug >= 1
+		call iputs
+		asciiz "NOTICE: sd_nocache library installed.  Disk Cache disabled.\r\n"
+	.endif
+
     ; mark the .bios_sdbuf as invalid
 	ld	    a, 1
 	ld	    (bios_sdbuf_val), a	    ; mark .bios_sdbuf_trk as invalid
