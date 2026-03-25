@@ -548,8 +548,20 @@ halt_loop:
     halt
     jp      halt_loop
 
+
+;##########################################################################
+; Choose one of the following SD card read/write routine.
+; Comment out the one not being used.
+; Only ONE of these can be active at a time
+;##########################################################################
+
 	.include "sd_nocache.asm" 		; This is the non-caching version
-    
+	;.include "sd_dmcache.asm" 		; This is the direct memory caching version
+
+;##########################################################################
+; Various other include libraries
+;##########################################################################
+
     .include "sio.asm"
     .include "puts.asm"
     .include "sd.asm"
