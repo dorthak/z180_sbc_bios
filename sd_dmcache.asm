@@ -26,9 +26,28 @@
 ;
 ;##########################################################################    
 
+;##########################################################################
+;
+; CP/M 2.2 Alteration Guide p19:
+; Assuming the drive has been selected, the track has been set, the sector
+; has been set, and the DMA address has been specified, the READ subroutine
+; attempts to read one sector based upon these parameters, and returns the
+; following error codes in register A:
+;
+;    0 no errors occurred
+;    1 non-recoverable error condition occurred
+;
+; When an error is reported the BDOS will print the message "BDOS ERR ON
+; x: BAD SECTOR".  The operator then has the option of typing <cr> to ignore
+; the error, or ctl-C to abort.
+;
+;##########################################################################    
+
+rw_debug:		.equ	3
+
 bios_read:
 
-    .if debug >=2
+    .if rw_debug >=2
         call	iputs
         asciiz	"bios_read entered: "
         call	debug_disk
@@ -72,7 +91,7 @@ bios_read:
         jr      z, .bios_read_sd_ok     ; The SD block in bios_sdbuf is the one we want
 
 .bios_read_block:
-        .if debug >= 2
+        .if rw_debug >= 2
 	        call	iputs
 	        db	"bios_read cache miss: \0"
 	        call	debug_disk
@@ -169,7 +188,7 @@ bios_read:
 
 bios_write:
 
-    .if debug >=1
+    .if rw_debug >=1
         push    bc
         call	iputs
         asciiz	"bios_write entered: C="
@@ -209,7 +228,7 @@ bios_write:
 	jp	    z, .bios_write_sdbuf	; The SD block in .bios_sdbuf is the one we want!
 
 .bios_write_miss:
-    .if debug >= 1
+    .if rw_debug >= 1
         call	iputs
         asciiz  "bios_write cache miss: "
         call	debug_disk

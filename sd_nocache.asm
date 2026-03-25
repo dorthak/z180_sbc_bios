@@ -26,9 +26,11 @@
 ;
 ;##########################################################################    
 
+rw_debug:		.equ	0
+
 bios_read:
 
-    .if debug >=2
+    .if rw_debug >=2
         call	iputs
         asciiz	"bios_read entered: "
         call	debug_disk
@@ -72,7 +74,7 @@ bios_read:
         jr      z, .bios_read_sd_ok     ; The SD block in bios_sdbuf is the one we want
 
 .bios_read_block:
-        .if debug >= 2
+        .if rw_debug >= 2
 	        call	iputs
 	        db	"bios_read cache miss: \0"
 	        call	debug_disk
@@ -169,7 +171,7 @@ bios_read:
 
 bios_write:
 
-    .if debug >=1
+    .if rw_debug >=1
         push    bc
         call	iputs
         asciiz	"bios_write entered: C="
@@ -209,7 +211,7 @@ bios_write:
 	jp	    z, .bios_write_sdbuf	; The SD block in .bios_sdbuf is the one we want!
 
 .bios_write_miss:
-    .if debug >= 1
+    .if rw_debug >= 1
         call	iputs
         asciiz  "bios_write cache miss: "
         call	debug_disk
